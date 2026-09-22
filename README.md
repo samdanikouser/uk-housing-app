@@ -23,6 +23,10 @@ Open `http://127.0.0.1:8000/ui/` for the web UI. Interactive API docs are availa
 
 (There is no `/swagger` path — that's just not where FastAPI puts it by default.)
 
+![Swagger UI at /docs](docs/screenshots/swagger-docs.webp)
+
+![ReDoc at /redoc](docs/screenshots/redoc.webp)
+
 For local development without PostgreSQL, remove/rename `.env` (or `unset DATABASE_URL` if it's exported in your shell) and the app falls back to `sqlite:///./uk_housing.db`. PostgreSQL is the supported deployment database:
 
 ```bash
