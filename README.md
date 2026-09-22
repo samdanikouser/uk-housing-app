@@ -2,6 +2,10 @@
 
 FastAPI service for importing and searching UK Land Registry Price Paid Data (2024–2025), with a built-in web UI at `/ui/` for uploading CSVs and searching without touching the API directly.
 
+![Search bar with postcode, price range slider, and date range picker](docs/screenshots/search-bar.webp)
+
+![Search results as property cards](docs/screenshots/results-cards.webp)
+
 ## Quick start
 
 ```bash
@@ -12,7 +16,12 @@ cp .env.example .env
 uvicorn app.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000/ui/` for the web UI, or `http://127.0.0.1:8000/docs` for interactive API docs (Swagger UI — there is no `/swagger` path, that's just not where FastAPI puts it; `/redoc` is also available).
+Open `http://127.0.0.1:8000/ui/` for the web UI. Interactive API docs are available at:
+
+- `http://127.0.0.1:8000/docs` — Swagger UI (interactive, "Try it out" buttons)
+- `http://127.0.0.1:8000/redoc` — ReDoc (read-only, cleaner reference view)
+
+(There is no `/swagger` path — that's just not where FastAPI puts it by default.)
 
 For local development without PostgreSQL, remove/rename `.env` (or `unset DATABASE_URL` if it's exported in your shell) and the app falls back to `sqlite:///./uk_housing.db`. PostgreSQL is the supported deployment database:
 
