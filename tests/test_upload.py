@@ -13,7 +13,7 @@ def test_upload_imports_valid_rows_and_skips_duplicates(client, db_session):
     )
 
     assert response.status_code == 200
-    assert response.json() == {"imported": 1, "rejected": 0}
+    assert response.json() == {"imported": 1, "duplicates": 1, "rejected": 0, "rejected_samples": []}
 
     count = db_session.scalar(select(func.count()).select_from(PropertyTransaction))
     assert count == 1

@@ -16,8 +16,10 @@ def main() -> None:
     Base.metadata.create_all(bind=engine)
     with SessionLocal() as session:
         for path in args.files:
-            imported, rejected = import_csv(session, path)
-            print(f"{path}: imported={imported}, rejected={rejected}")
+            imported, duplicates, rejected, rejected_samples = import_csv(session, path)
+            print(f"{path}: imported={imported}, duplicates={duplicates}, rejected={rejected}")
+            for sample in rejected_samples:
+                print(f"  rejected: {sample}")
 
 
 if __name__ == "__main__":

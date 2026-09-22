@@ -16,7 +16,9 @@ def test_importer_validates_rows_and_skips_duplicates(tmp_path: Path):
     engine = create_engine("sqlite:///:memory:")
     Base.metadata.create_all(engine)
     with sessionmaker(bind=engine)() as session:
-        imported, rejected = import_csv(session, csv_file)
+        imported, duplicates, rejected, rejected_samples = import_csv(session, csv_file)
         count = session.scalar(select(func.count()).select_from(PropertyTransaction))
 
-    assert (imported, rejected, count) == (1, 2, 1)
+    assert (imported, duplicates, rejected, count) == (1, 1, 2, 1)
+    assert len(rejected_samples) == 2
+    assert "price must be greater than zero" in rejected_samples[0]

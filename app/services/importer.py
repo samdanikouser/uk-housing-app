@@ -14,6 +14,7 @@ BATCH_SIZE = 5_000
 EXPECTED_COLUMNS = 16
 MIN_DATE = date(2024, 1, 1)
 MAX_DATE = date(2025, 12, 31)
+REJECTED_SAMPLE_LIMIT = 5
 
 
 def _parse_row(row: list[str]) -> dict:
@@ -57,14 +58,16 @@ def _valid_rows(path: Path, rejected: list[str]) -> Iterator[dict]:
                 rejected.append(f"line {line_number}: {exc}")
 
 
-def import_csv(session: Session, path: str | Path, batch_size: int = BATCH_SIZE) -> tuple[int, int]:
+def import_csv(session: Session, path: str | Path, batch_size: int = BATCH_SIZE) -> tuple[int, int, int, list[str]]:
     path = Path(path)
     rejected: list[str] = []
     imported = 0
+    valid_count = 0
     batch = []
     dialect = session.bind.dialect.name if session.bind is not None else "postgresql"
 
     for record in _valid_rows(path, rejected):
+        valid_count += 1
         batch.append(record)
         if len(batch) >= batch_size:
             imported += _insert_batch(session, batch, dialect)
@@ -73,8 +76,12 @@ def import_csv(session: Session, path: str | Path, batch_size: int = BATCH_SIZE)
     if batch:
         imported += _insert_batch(session, batch, dialect)
         session.commit()
-    logger.info("Imported %s records from %s; rejected %s rows", imported, path, len(rejected))
-    return imported, len(rejected)
+    duplicates = valid_count - imported
+    logger.info(
+        "Imported %s records from %s; skipped %s duplicates; rejected %s invalid rows",
+        imported, path, duplicates, len(rejected),
+    )
+    return imported, duplicates, len(rejected), rejected[:REJECTED_SAMPLE_LIMIT]
 
 
 def _insert_batch(session: Session, batch: list[dict], dialect: str) -> int:

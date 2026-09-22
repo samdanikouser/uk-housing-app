@@ -11,6 +11,9 @@ class TransactionResult(BaseModel):
     date_of_transfer: date
     postcode: str
     property_type: str
+    duration: str
+    street: str
+    town_city: str
 
 
 class SearchResponse(BaseModel):

@@ -23,8 +23,13 @@ async def upload_csv(file: UploadFile = File(...), db: Session = Depends(get_db)
             tmp.write(chunk)
 
     try:
-        imported, rejected = import_csv(db, tmp_path)
+        imported, duplicates, rejected, rejected_samples = import_csv(db, tmp_path)
     finally:
         tmp_path.unlink(missing_ok=True)
 
-    return {"imported": imported, "rejected": rejected}
+    return {
+        "imported": imported,
+        "duplicates": duplicates,
+        "rejected": rejected,
+        "rejected_samples": rejected_samples,
+    }

@@ -19,7 +19,7 @@ def seed_transactions(db_session):
 def test_search_filters_by_postcode_price_and_date(client):
     response = client.get("/search", params={"postcode": "sw1", "min_price": 400000, "max_price": 500000, "date_from": "2025-01-01"})
     assert response.status_code == 200
-    assert response.json() == {"count": 1, "results": [{"transaction_id": "one", "price": 450000, "date_of_transfer": "2025-03-15", "postcode": "SW1A 1AA", "property_type": "D"}]}
+    assert response.json() == {"count": 1, "results": [{"transaction_id": "one", "price": 450000, "date_of_transfer": "2025-03-15", "postcode": "SW1A 1AA", "property_type": "D", "duration": "F", "street": "", "town_city": ""}]}
 
 
 def test_search_rejects_reversed_ranges(client):

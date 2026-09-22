@@ -4,313 +4,794 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UK Housing Price Search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 <style>
   :root {
-    --bg: #f4f5f7;
+    --bg: #f0fdfa;
     --surface: #ffffff;
-    --border: #e2e4e9;
-    --text: #1a1d24;
-    --text-muted: #6b7280;
-    --primary: #2f6fed;
-    --primary-hover: #2559c7;
-    --success-bg: #ecfdf3;
-    --success-text: #067647;
-    --error-bg: #fef3f2;
-    --error-text: #b42318;
-    --radius: 10px;
-    --shadow: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+    --surface-glass: rgba(255, 255, 255, 0.7);
+    --border: #99f6e4;
+    --text: #134e4a;
+    --text-muted: #475569;
+    --primary: #0f766e;
+    --primary-hover: #0c5c56;
+    --secondary: #14b8a6;
+    --accent: #0369a1;
+    --success-bg: #ecfdf5;
+    --success-text: #047857;
+    --error-bg: #fef2f2;
+    --error-text: #b91c1c;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(15, 118, 110, 0.06), 0 4px 12px rgba(15, 118, 110, 0.06);
+    --shadow-hover: 0 8px 20px rgba(15, 118, 110, 0.12);
+
+    --badge-d-bg: #e0edff; --badge-d-text: #1d4ed8;
+    --badge-s-bg: #f3e8ff; --badge-s-text: #7e22ce;
+    --badge-t-bg: #ffedd5; --badge-t-text: #c2410c;
+    --badge-f-bg: #e0f7f4; --badge-f-text: #0f766e;
+    --badge-o-bg: #f1f5f9; --badge-o-text: #475569;
+    --badge-tenure-bg: #f0fdfa; --badge-tenure-text: #0f766e;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #101216;
-      --surface: #181b21;
-      --border: #2a2e37;
-      --text: #e6e8eb;
-      --text-muted: #9aa1ac;
-      --primary: #5b8def;
-      --primary-hover: #7ba1f4;
-      --success-bg: #0d2318;
-      --success-text: #5fd68f;
+      --bg: #0b1614;
+      --surface: #10201d;
+      --surface-glass: rgba(16, 32, 29, 0.7);
+      --border: #1f3d38;
+      --text: #e3f6f2;
+      --text-muted: #9db3af;
+      --primary: #2dd4bf;
+      --primary-hover: #5eead4;
+      --secondary: #14b8a6;
+      --accent: #38bdf8;
+      --success-bg: #0d2a20;
+      --success-text: #4ade80;
       --error-bg: #2a1414;
-      --error-text: #f398a0;
+      --error-text: #f87171;
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.35);
+
+      --badge-d-bg: #16233f; --badge-d-text: #93c5fd;
+      --badge-s-bg: #241a35; --badge-s-text: #d8b4fe;
+      --badge-t-bg: #33220f; --badge-t-text: #fdba74;
+      --badge-f-bg: #0d2621; --badge-f-text: #5eead4;
+      --badge-o-bg: #1c2530; --badge-o-text: #cbd5e1;
+      --badge-tenure-bg: transparent; --badge-tenure-text: #9db3af;
     }
   }
 
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background: var(--bg);
     color: var(--text);
     margin: 0;
-    padding: 2.5rem 1.25rem 4rem;
+    padding: 0 1.25rem 4rem;
   }
 
-  .page {
-    max-width: 880px;
-    margin: 0 auto;
-  }
+  .page { max-width: 1080px; margin: 0 auto; }
 
-  header {
-    margin-bottom: 2rem;
-  }
-
-  h1 {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin: 0 0 0.25rem;
+  h1, h2 {
+    font-family: "Josefin Sans", "Inter", sans-serif;
     letter-spacing: -0.01em;
   }
 
-  .subtitle {
+  /* Hero / search */
+  .hero {
+    padding: 2.5rem 0 1.75rem;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+    color: var(--primary);
+  }
+
+  .hero .subtitle {
     color: var(--text-muted);
-    font-size: 0.95rem;
-    margin: 0;
+    font-size: 1rem;
+    margin: 0 0 1.5rem;
   }
 
-  .card {
-    background: var(--surface);
+  .search-bar {
+    background: var(--surface-glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 999px;
     box-shadow: var(--shadow);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .card h2 {
-    font-size: 1.05rem;
-    margin: 0 0 1rem;
-  }
-
-  .row {
+    padding: 0.6rem 0.6rem 0.6rem 1.5rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: flex-end;
+    align-items: center;
+    gap: 0;
   }
 
-  .field {
+  .search-field {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    flex: 1 1 140px;
+    gap: 0.15rem;
+    padding: 0.3rem 1rem;
+    flex: 1 1 120px;
     min-width: 0;
   }
 
-  label {
-    font-size: 0.8rem;
+  .search-field label {
+    font-size: 0.7rem;
     font-weight: 600;
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
   }
 
-  input[type="text"],
-  input[type="number"],
-  input[type="date"] {
-    font-size: 0.9rem;
-    padding: 0.55rem 0.65rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg);
-    color: var(--text);
-    width: 100%;
-  }
-
-  input:focus {
-    outline: 2px solid var(--primary);
-    outline-offset: 1px;
-  }
-
-  input[type="file"] {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
-  button {
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 0.6rem 1.1rem;
+  .search-field input {
     border: none;
-    border-radius: 8px;
+    background: transparent;
+    font-size: 0.92rem;
+    color: var(--text);
+    padding: 0.15rem 0;
+    width: 100%;
+    font-family: inherit;
+  }
+
+  .search-field input:focus { outline: none; }
+  .search-field input::placeholder { color: var(--text-muted); }
+
+  .search-divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--border);
+    margin: 0.4rem 0;
+  }
+
+  .search-submit {
+    font-size: 0.92rem;
+    font-weight: 600;
+    padding: 0.75rem 1.6rem;
+    border: none;
+    border-radius: 999px;
     background: var(--primary);
     color: #fff;
     cursor: pointer;
     white-space: nowrap;
     transition: background 0.15s ease;
+    margin: 0.15rem;
   }
 
-  button:hover { background: var(--primary-hover); }
-  button:active { transform: translateY(1px); }
+  .search-submit:hover { background: var(--primary-hover); }
+  .search-submit:active { transform: translateY(1px); }
 
-  .upload-row {
+  /* Upload utility bar */
+  .upload-bar {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
     align-items: center;
+    gap: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1.75rem;
+    font-size: 0.85rem;
   }
 
-  .status {
-    margin-top: 0.9rem;
+  .upload-label {
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  input[type="file"] {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    max-width: 220px;
+  }
+
+  button.secondary {
     font-size: 0.85rem;
-    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  button.secondary:hover { background: var(--bg); }
+
+  .status {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.7rem;
     border-radius: 8px;
     display: none;
   }
 
-  .status.visible { display: block; }
+  .status.visible { display: inline-block; }
   .status.success { background: var(--success-bg); color: var(--success-text); }
   .status.error { background: var(--error-bg); color: var(--error-text); }
   .status.pending { color: var(--text-muted); background: transparent; padding-left: 0; }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1.25rem;
-    font-size: 0.88rem;
+  /* Results */
+  .results-summary {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
   }
 
-  th {
-    text-align: left;
-    font-size: 0.75rem;
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .property-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.15rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .property-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .card-badges {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+  }
+
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.28rem 0.6rem;
+    border-radius: 999px;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    color: var(--text-muted);
-    padding: 0 0.6rem 0.5rem;
-    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
   }
 
-  td {
-    padding: 0.65rem 0.6rem;
-    border-bottom: 1px solid var(--border);
+  .badge-type-D { background: var(--badge-d-bg); color: var(--badge-d-text); }
+  .badge-type-S { background: var(--badge-s-bg); color: var(--badge-s-text); }
+  .badge-type-T { background: var(--badge-t-bg); color: var(--badge-t-text); }
+  .badge-type-F { background: var(--badge-f-bg); color: var(--badge-f-text); }
+  .badge-type-O { background: var(--badge-o-bg); color: var(--badge-o-text); }
+  .badge-tenure { background: var(--badge-tenure-bg); color: var(--badge-tenure-text); border: 1px solid var(--border); }
+
+  .card-price {
+    font-family: "Josefin Sans", "Inter", sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 0.3rem;
+    color: var(--text);
   }
 
-  tbody tr:hover { background: var(--bg); }
-  tbody tr:last-child td { border-bottom: none; }
-
-  .empty {
-    color: var(--text-muted);
+  .card-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
     font-size: 0.88rem;
-    padding: 1rem 0 0;
+    color: var(--text);
+    margin: 0 0 0.2rem;
+    line-height: 1.35;
+  }
+
+  .card-address svg { flex: 0 0 auto; margin-top: 0.15rem; color: var(--text-muted); }
+
+  .card-postcode {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 0 0 0.7rem 1.2rem;
+  }
+
+  .card-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 0.6rem;
+    margin-top: 0.2rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    padding: 2.5rem 1rem;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.75rem;
+  }
+
+  .pagination button {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .pagination button:hover:not(:disabled) { background: var(--bg); }
+  .pagination button:disabled { opacity: 0.4; cursor: default; }
+
+  #pageInfo { font-size: 0.85rem; color: var(--text-muted); }
+
+  @media (max-width: 600px) {
+    .search-bar { border-radius: var(--radius); padding: 0.75rem; }
+    .search-field { padding: 0.5rem 0.4rem; flex: 1 1 45%; }
+    .search-divider { display: none; }
+    .search-submit { width: 100%; margin: 0.4rem 0 0; }
+  }
+
+  /* Date field affordance */
+  .search-field input[readonly] { cursor: pointer; }
+
+  /* Price range slider */
+  .price-range-field { flex: 1 1 220px; }
+
+  .price-range {
+    position: relative;
+    height: 20px;
+    margin-top: 0.35rem;
+  }
+
+  .price-range-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--border);
+    border-radius: 999px;
+    transform: translateY(-50%);
+  }
+
+  .price-range-fill {
+    position: absolute;
+    height: 100%;
+    background: var(--primary);
+    border-radius: 999px;
+  }
+
+  .price-range input[type="range"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    margin: 0;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: none;
+  }
+
+  .price-range input[type="range"]::-webkit-slider-runnable-track {
+    background: transparent;
+    height: 20px;
+  }
+  .price-range input[type="range"]::-moz-range-track {
+    background: transparent;
+    height: 20px;
+    border: none;
+  }
+
+  .price-range input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: auto;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+  }
+  .price-range input[type="range"]::-moz-range-thumb {
+    pointer-events: auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+  }
+
+  .price-range-labels {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+  }
+
+  /* Flatpickr theme (matches site palette) */
+  .flatpickr-calendar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-hover);
+    font-family: "Inter", sans-serif;
+  }
+  .flatpickr-calendar.arrowTop:before,
+  .flatpickr-calendar.arrowTop:after { border-bottom-color: var(--border); }
+  .flatpickr-months, .flatpickr-weekdays { background: var(--surface); }
+  .flatpickr-month, .flatpickr-current-month, .flatpickr-current-month input.cur-year {
+    color: var(--text);
+    fill: var(--text);
+  }
+  .flatpickr-weekday { background: var(--surface); color: var(--text-muted); font-size: 0.7rem; }
+  .flatpickr-prev-month, .flatpickr-next-month { fill: var(--text-muted); }
+  .flatpickr-prev-month:hover svg, .flatpickr-next-month:hover svg { fill: var(--primary); }
+  .flatpickr-day { color: var(--text); border-radius: 6px; }
+  .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { color: var(--text-muted); opacity: 0.5; }
+  .flatpickr-day.flatpickr-disabled { color: var(--text-muted); opacity: 0.3; }
+  .flatpickr-day:hover { background: var(--bg); }
+  .flatpickr-day.today { border-color: var(--primary); }
+  .flatpickr-day.selected,
+  .flatpickr-day.startRange,
+  .flatpickr-day.endRange {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+  }
+  .flatpickr-day.inRange {
+    background: var(--bg) !important;
+    border-color: var(--bg) !important;
+    box-shadow: -5px 0 0 var(--bg), 5px 0 0 var(--bg);
+  }
+
+  /* Upload progress */
+  .upload-progress {
+    width: 140px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--border);
+    overflow: hidden;
+    display: none;
+  }
+  .upload-progress.visible { display: block; }
+  .upload-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--primary);
+    transition: width 0.15s ease;
+  }
+  .upload-progress-bar.indeterminate {
+    width: 40% !important;
+    animation: indeterminate 1.1s ease-in-out infinite;
+  }
+  @keyframes indeterminate {
+    0% { margin-left: -40%; }
+    100% { margin-left: 100%; }
   }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <header>
+  <section class="hero">
     <h1>UK Housing Price Search</h1>
-    <p class="subtitle">Upload Land Registry price-paid data, then search transactions by postcode, price, and date.</p>
-  </header>
+    <p class="subtitle">Search sold-price transactions from HM Land Registry Price Paid Data.</p>
 
-  <section class="card">
-    <h2>Upload CSV</h2>
-    <div class="upload-row">
-      <input type="file" id="csvFile" accept=".csv">
-      <button id="uploadBtn">Upload</button>
-    </div>
-    <div id="uploadStatus" class="status"></div>
-  </section>
-
-  <section class="card">
-    <h2>Search</h2>
-    <div class="row">
-      <div class="field">
+    <div class="search-bar">
+      <div class="search-field">
         <label for="postcode">Postcode</label>
-        <input type="text" id="postcode" placeholder="SW1">
+        <input type="text" id="postcode" placeholder="e.g. SW1">
       </div>
-      <div class="field">
-        <label for="minPrice">Min price</label>
-        <input type="number" id="minPrice" placeholder="0">
+      <div class="search-divider"></div>
+      <div class="search-field price-range-field">
+        <label>Price range</label>
+        <div class="price-range">
+          <div class="price-range-track"><div id="priceRangeFill" class="price-range-fill"></div></div>
+          <input type="range" id="minPrice" min="0" max="2000000" step="10000" value="0">
+          <input type="range" id="maxPrice" min="0" max="2000000" step="10000" value="2000000">
+        </div>
+        <div class="price-range-labels">
+          <span id="minPriceLabel">No min</span>
+          <span>–</span>
+          <span id="maxPriceLabel">No max</span>
+        </div>
       </div>
-      <div class="field">
-        <label for="maxPrice">Max price</label>
-        <input type="number" id="maxPrice" placeholder="Any">
+      <div class="search-divider"></div>
+      <div class="search-field">
+        <label for="dateRange">Sold between</label>
+        <input type="text" id="dateRange" placeholder="Any dates" readonly autocomplete="off">
       </div>
-      <div class="field">
-        <label for="dateFrom">Date from</label>
-        <input type="date" id="dateFrom">
-      </div>
-      <div class="field">
-        <label for="dateTo">Date to</label>
-        <input type="date" id="dateTo">
-      </div>
-      <div class="field" style="flex: 0 0 auto;">
-        <label>&nbsp;</label>
-        <button id="searchBtn">Search</button>
-      </div>
+      <button id="searchBtn" class="search-submit">Search</button>
     </div>
-    <div id="searchStatus" class="status"></div>
-    <table id="resultsTable" hidden>
-      <thead>
-        <tr><th>Postcode</th><th>Price</th><th>Date</th><th>Type</th></tr>
-      </thead>
-      <tbody id="resultsBody"></tbody>
-    </table>
   </section>
+
+  <div class="upload-bar">
+    <span class="upload-label">Import data</span>
+    <input type="file" id="csvFile" accept=".csv" hidden>
+    <button id="uploadBtn" class="secondary">Upload CSV</button>
+    <div id="uploadProgress" class="upload-progress"><div id="uploadProgressBar" class="upload-progress-bar"></div></div>
+    <span id="uploadStatus" class="status"></span>
+  </div>
+
+  <p id="resultsSummary" class="results-summary"></p>
+  <div id="resultsGrid" class="results-grid" hidden></div>
+  <div id="emptyState" class="empty-state" hidden>No results. Try widening your search.</div>
+
+  <div id="pagination" class="pagination" hidden>
+    <button id="prevBtn" type="button">← Prev</button>
+    <span id="pageInfo"></span>
+    <button id="nextBtn" type="button">Next →</button>
+  </div>
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 <script>
+const PROPERTY_TYPES = { D: 'Detached', S: 'Semi-Detached', T: 'Terraced', F: 'Flat / Maisonette', O: 'Other' };
+const DURATIONS = { F: 'Freehold', L: 'Leasehold' };
+const PAGE_SIZE = 50;
+let currentOffset = 0;
+
+const PIN_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+
 function setStatus(el, message, kind) {
   el.textContent = message;
   el.className = 'status visible' + (kind ? ' ' + kind : '');
 }
 
-async function upload() {
+function errorMessage(data) {
+  if (!data) return 'request failed';
+  if (typeof data.detail === 'string') return data.detail;
+  if (Array.isArray(data.detail)) {
+    return data.detail.map(d => d.msg || String(d)).join('; ');
+  }
+  return 'request failed';
+}
+
+function formatDate(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+function toIsoDate(date) { return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`; }
+
+let selectedDateRange = [];
+flatpickr('#dateRange', {
+  mode: 'range',
+  dateFormat: 'Y-m-d',
+  altInput: true,
+  altFormat: 'd M Y',
+  onChange: (dates) => { selectedDateRange = dates; },
+});
+
+function upload() {
   const fileInput = document.getElementById('csvFile');
   const status = document.getElementById('uploadStatus');
+  const progress = document.getElementById('uploadProgress');
+  const progressBar = document.getElementById('uploadProgressBar');
   if (!fileInput.files.length) {
     setStatus(status, 'Choose a CSV file first.', 'error');
     return;
   }
   const formData = new FormData();
   formData.append('file', fileInput.files[0]);
-  setStatus(status, 'Uploading…', 'pending');
-  try {
-    const res = await fetch('/upload', { method: 'POST', body: formData });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || 'upload failed');
-    setStatus(status, `Imported ${data.imported} row(s), rejected ${data.rejected}.`, 'success');
-  } catch (err) {
-    setStatus(status, err.message, 'error');
-  }
+
+  setStatus(status, 'Uploading… 0%', 'pending');
+  progress.classList.add('visible');
+  progressBar.classList.remove('indeterminate');
+  progressBar.style.width = '0%';
+
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/upload');
+
+  xhr.upload.addEventListener('progress', (e) => {
+    if (!e.lengthComputable) return;
+    const pct = Math.round((e.loaded / e.total) * 100);
+    progressBar.style.width = pct + '%';
+    setStatus(status, `Uploading… ${pct}%`, 'pending');
+    if (pct >= 100) {
+      progressBar.classList.add('indeterminate');
+      setStatus(status, 'Processing… this can take a while for large files.', 'pending');
+    }
+  });
+
+  xhr.addEventListener('load', () => {
+    progress.classList.remove('visible');
+    progressBar.classList.remove('indeterminate');
+    let data;
+    try {
+      data = JSON.parse(xhr.responseText);
+    } catch {
+      data = null;
+    }
+    if (xhr.status >= 200 && xhr.status < 300 && data) {
+      const parts = [`Imported ${data.imported} row(s)`];
+      if (data.duplicates) parts.push(`${data.duplicates} already existed (skipped)`);
+      if (data.rejected) {
+        let rejectedPart = `${data.rejected} invalid (rejected)`;
+        if (data.rejected_samples && data.rejected_samples.length) {
+          const reason = data.rejected_samples[0].replace(/^line \d+:\s*/, '');
+          rejectedPart += ` — e.g. "${reason}"`;
+        }
+        parts.push(rejectedPart);
+      }
+      setStatus(status, parts.join(', ') + '.', data.imported === 0 && data.duplicates > 0 ? 'pending' : 'success');
+    } else {
+      setStatus(status, errorMessage(data), 'error');
+    }
+  });
+
+  xhr.addEventListener('error', () => {
+    progress.classList.remove('visible');
+    setStatus(status, 'Upload failed — network error.', 'error');
+  });
+
+  xhr.send(formData);
 }
 
-async function search() {
-  const status = document.getElementById('searchStatus');
-  const table = document.getElementById('resultsTable');
-  const body = document.getElementById('resultsBody');
+const PRICE_MIN = 0;
+const PRICE_MAX = 2000000;
+
+function formatPrice(v) { return '£' + Number(v).toLocaleString(); }
+
+function renderPriceRange() {
+  const minInput = document.getElementById('minPrice');
+  const maxInput = document.getElementById('maxPrice');
+  const minVal = Number(minInput.value);
+  const maxVal = Number(maxInput.value);
+  const pctMin = ((minVal - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100;
+  const pctMax = ((maxVal - PRICE_MIN) / (PRICE_MAX - PRICE_MIN)) * 100;
+  const fill = document.getElementById('priceRangeFill');
+  fill.style.left = pctMin + '%';
+  fill.style.width = Math.max(0, pctMax - pctMin) + '%';
+  document.getElementById('minPriceLabel').textContent = minVal <= PRICE_MIN ? 'No min' : formatPrice(minVal);
+  document.getElementById('maxPriceLabel').textContent = maxVal >= PRICE_MAX ? 'No max' : formatPrice(maxVal);
+}
+
+function onMinPriceInput() {
+  const minInput = document.getElementById('minPrice');
+  const maxInput = document.getElementById('maxPrice');
+  if (Number(minInput.value) > Number(maxInput.value)) minInput.value = maxInput.value;
+  renderPriceRange();
+}
+
+function onMaxPriceInput() {
+  const minInput = document.getElementById('minPrice');
+  const maxInput = document.getElementById('maxPrice');
+  if (Number(maxInput.value) < Number(minInput.value)) maxInput.value = minInput.value;
+  renderPriceRange();
+}
+
+document.getElementById('minPrice').addEventListener('input', onMinPriceInput);
+document.getElementById('maxPrice').addEventListener('input', onMaxPriceInput);
+renderPriceRange();
+
+function buildParams() {
   const params = new URLSearchParams();
   const postcode = document.getElementById('postcode').value.trim();
-  const minPrice = document.getElementById('minPrice').value;
-  const maxPrice = document.getElementById('maxPrice').value;
-  const dateFrom = document.getElementById('dateFrom').value;
-  const dateTo = document.getElementById('dateTo').value;
+  const minPrice = Number(document.getElementById('minPrice').value);
+  const maxPrice = Number(document.getElementById('maxPrice').value);
   if (postcode) params.set('postcode', postcode);
-  if (minPrice) params.set('min_price', minPrice);
-  if (maxPrice) params.set('max_price', maxPrice);
-  if (dateFrom) params.set('date_from', dateFrom);
-  if (dateTo) params.set('date_to', dateTo);
+  if (minPrice > PRICE_MIN) params.set('min_price', minPrice);
+  if (maxPrice < PRICE_MAX) params.set('max_price', maxPrice);
+  if (selectedDateRange[0]) params.set('date_from', toIsoDate(selectedDateRange[0]));
+  if (selectedDateRange[1]) params.set('date_to', toIsoDate(selectedDateRange[1]));
+  return params;
+}
 
-  setStatus(status, 'Searching…', 'pending');
-  table.hidden = true;
+function renderCard(r) {
+  const typeLabel = PROPERTY_TYPES[r.property_type] || r.property_type;
+  const tenureLabel = DURATIONS[r.duration] || r.duration;
+  const addressParts = [r.street, r.town_city].filter(Boolean);
+  const address = addressParts.length ? addressParts.join(', ') : 'Address not recorded';
+
+  return `
+    <article class="property-card">
+      <div class="card-badges">
+        <span class="badge badge-type-${r.property_type}">${typeLabel}</span>
+        <span class="badge badge-tenure">${tenureLabel}</span>
+      </div>
+      <p class="card-price">£${r.price.toLocaleString()}</p>
+      <p class="card-address">${PIN_ICON}<span>${address}</span></p>
+      <p class="card-postcode">${r.postcode}</p>
+      <p class="card-date">Sold ${formatDate(r.date_of_transfer)}</p>
+    </article>
+  `;
+}
+
+async function runSearch() {
+  const summary = document.getElementById('resultsSummary');
+  const grid = document.getElementById('resultsGrid');
+  const emptyState = document.getElementById('emptyState');
+  const pagination = document.getElementById('pagination');
+  const pageInfo = document.getElementById('pageInfo');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  const params = buildParams();
+  params.set('limit', PAGE_SIZE);
+  params.set('offset', currentOffset);
+
+  summary.textContent = 'Searching…';
+  grid.hidden = true;
+  emptyState.hidden = true;
+  pagination.hidden = true;
+
   try {
     const res = await fetch('/search?' + params.toString());
     const data = await res.json();
-    if (!res.ok) throw new Error(data.detail || 'search failed');
-    setStatus(status, `${data.count} result(s).`, data.count ? 'success' : 'pending');
-    body.innerHTML = data.results.map(r =>
-      `<tr><td>${r.postcode}</td><td>£${r.price.toLocaleString()}</td><td>${r.date_of_transfer}</td><td>${r.property_type}</td></tr>`
-    ).join('');
-    table.hidden = data.results.length === 0;
+    if (!res.ok) throw new Error(errorMessage(data));
+
+    if (data.count === 0) {
+      summary.textContent = '';
+      emptyState.hidden = false;
+      return;
+    }
+
+    const from = currentOffset + 1;
+    const to = Math.min(currentOffset + PAGE_SIZE, data.count);
+    summary.textContent = `Showing ${from}–${to} of ${data.count.toLocaleString()} result(s)`;
+
+    grid.innerHTML = data.results.map(renderCard).join('');
+    grid.hidden = false;
+
+    pageInfo.textContent = `Page ${Math.floor(currentOffset / PAGE_SIZE) + 1} of ${Math.ceil(data.count / PAGE_SIZE)}`;
+    prevBtn.disabled = currentOffset === 0;
+    nextBtn.disabled = to >= data.count;
+    pagination.hidden = false;
   } catch (err) {
-    setStatus(status, err.message, 'error');
+    summary.textContent = '';
+    emptyState.hidden = false;
+    emptyState.textContent = err.message;
   }
 }
 
-document.getElementById('uploadBtn').addEventListener('click', upload);
+function search() {
+  currentOffset = 0;
+  runSearch();
+}
+
+function prevPage() {
+  currentOffset = Math.max(0, currentOffset - PAGE_SIZE);
+  runSearch();
+}
+
+function nextPage() {
+  currentOffset += PAGE_SIZE;
+  runSearch();
+}
+
+document.getElementById('uploadBtn').addEventListener('click', () => {
+  document.getElementById('csvFile').click();
+});
+document.getElementById('csvFile').addEventListener('change', upload);
 document.getElementById('searchBtn').addEventListener('click', search);
+document.getElementById('prevBtn').addEventListener('click', prevPage);
+document.getElementById('nextBtn').addEventListener('click', nextPage);
 </script>
 
 </body>
