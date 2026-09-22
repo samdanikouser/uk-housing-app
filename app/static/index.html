@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UK Housing Price Search</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; }
+  h1 { font-size: 1.4rem; }
+  section { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #ddd; }
+  label { display: block; font-size: 0.85rem; margin-top: 0.5rem; }
+  input { padding: 0.35rem; margin-top: 0.15rem; }
+  .filters { display: flex; flex-wrap: wrap; gap: 1rem; }
+  button { margin-top: 1rem; padding: 0.5rem 1rem; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  th, td { text-align: left; padding: 0.4rem; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+  #uploadStatus, #searchStatus { margin-top: 0.5rem; font-size: 0.9rem; }
+  .error { color: #b00020; }
+</style>
+</head>
+<body>
+
+<h1>UK Housing Price Search</h1>
+
+<section>
+  <h2>Upload CSV</h2>
+  <input type="file" id="csvFile" accept=".csv">
+  <button id="uploadBtn">Upload</button>
+  <div id="uploadStatus"></div>
+</section>
+
+<section>
+  <h2>Search</h2>
+  <div class="filters">
+    <div><label>Postcode<input type="text" id="postcode" placeholder="SW1"></label></div>
+    <div><label>Min price<input type="number" id="minPrice"></label></div>
+    <div><label>Max price<input type="number" id="maxPrice"></label></div>
+    <div><label>Date from<input type="date" id="dateFrom"></label></div>
+    <div><label>Date to<input type="date" id="dateTo"></label></div>
+  </div>
+  <button id="searchBtn">Search</button>
+  <div id="searchStatus"></div>
+  <table id="resultsTable" hidden>
+    <thead>
+      <tr><th>Postcode</th><th>Price</th><th>Date</th><th>Type</th></tr>
+    </thead>
+    <tbody id="resultsBody"></tbody>
+  </table>
+</section>
+
+<script>
+async function upload() {
+  const fileInput = document.getElementById('csvFile');
+  const status = document.getElementById('uploadStatus');
+  if (!fileInput.files.length) {
+    status.textContent = 'Choose a CSV file first.';
+    status.className = 'error';
+    return;
+  }
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+  status.className = '';
+  status.textContent = 'Uploading...';
+  try {
+    const res = await fetch('/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'upload failed');
+    status.textContent = `Imported ${data.imported} rows, rejected ${data.rejected}.`;
+  } catch (err) {
+    status.className = 'error';
+    status.textContent = err.message;
+  }
+}
+
+async function search() {
+  const status = document.getElementById('searchStatus');
+  const table = document.getElementById('resultsTable');
+  const body = document.getElementById('resultsBody');
+  const params = new URLSearchParams();
+  const postcode = document.getElementById('postcode').value.trim();
+  const minPrice = document.getElementById('minPrice').value;
+  const maxPrice = document.getElementById('maxPrice').value;
+  const dateFrom = document.getElementById('dateFrom').value;
+  const dateTo = document.getElementById('dateTo').value;
+  if (postcode) params.set('postcode', postcode);
+  if (minPrice) params.set('min_price', minPrice);
+  if (maxPrice) params.set('max_price', maxPrice);
+  if (dateFrom) params.set('date_from', dateFrom);
+  if (dateTo) params.set('date_to', dateTo);
+
+  status.className = '';
+  status.textContent = 'Searching...';
+  table.hidden = true;
+  try {
+    const res = await fetch('/search?' + params.toString());
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'search failed');
+    status.textContent = `${data.count} result(s).`;
+    body.innerHTML = data.results.map(r =>
+      `<tr><td>${r.postcode}</td><td>£${r.price.toLocaleString()}</td><td>${r.date_of_transfer}</td><td>${r.property_type}</td></tr>`
+    ).join('');
+    table.hidden = data.results.length === 0;
+  } catch (err) {
+    status.className = 'error';
+    status.textContent = err.message;
+  }
+}
+
+document.getElementById('uploadBtn').addEventListener('click', upload);
+document.getElementById('searchBtn').addEventListener('click', search);
+</script>
+
+</body>
+</html>
