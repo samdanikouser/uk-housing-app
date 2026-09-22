@@ -20,7 +20,7 @@ def _parse_row(row: list[str]) -> dict:
     if len(row) != EXPECTED_COLUMNS:
         raise ValueError(f"expected {EXPECTED_COLUMNS} columns, got {len(row)}")
     transaction_id, price, transfer_date, postcode, property_type, old_new, duration, paon, saon, street, locality, town_city, district, county, ppd_category, record_status = row
-    transfer_date_value = date.fromisoformat(transfer_date)
+    transfer_date_value = date.fromisoformat(transfer_date.split(" ")[0])
     price_value = int(price)
     if not transaction_id or not postcode.strip():
         raise ValueError("transaction_id and postcode are required")
@@ -68,10 +68,11 @@ def import_csv(session: Session, path: str | Path, batch_size: int = BATCH_SIZE)
         batch.append(record)
         if len(batch) >= batch_size:
             imported += _insert_batch(session, batch, dialect)
+            session.commit()
             batch.clear()
     if batch:
         imported += _insert_batch(session, batch, dialect)
-    session.commit()
+        session.commit()
     logger.info("Imported %s records from %s; rejected %s rows", imported, path, len(rejected))
     return imported, len(rejected)
 

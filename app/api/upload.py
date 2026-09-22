@@ -9,6 +9,8 @@ from app.services.importer import import_csv
 
 router = APIRouter()
 
+CHUNK_SIZE = 1024 * 1024  # 1 MB
+
 
 @router.post("/upload")
 async def upload_csv(file: UploadFile = File(...), db: Session = Depends(get_db)):
@@ -16,8 +18,9 @@ async def upload_csv(file: UploadFile = File(...), db: Session = Depends(get_db)
         raise HTTPException(status_code=422, detail="file must be a .csv")
 
     with tempfile.NamedTemporaryFile(suffix=".csv", delete=False) as tmp:
-        tmp.write(await file.read())
         tmp_path = Path(tmp.name)
+        while chunk := await file.read(CHUNK_SIZE):
+            tmp.write(chunk)
 
     try:
         imported, rejected = import_csv(db, tmp_path)

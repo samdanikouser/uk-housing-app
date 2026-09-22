@@ -8,6 +8,8 @@ from app.api.upload import router as upload_router
 from app.database import engine
 from app.models import Base
 
+logging.basicConfig(level=logging.INFO)
+
 app = FastAPI(
     title="UK Housing Price API",
     version="1.0.0",
