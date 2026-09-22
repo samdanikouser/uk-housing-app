@@ -21,7 +21,6 @@ Open `http://127.0.0.1:8000/ui/` for the web UI. Interactive API docs are availa
 - `http://127.0.0.1:8000/docs` — Swagger UI (interactive, "Try it out" buttons)
 - `http://127.0.0.1:8000/redoc` — ReDoc (read-only, cleaner reference view)
 
-(There is no `/swagger` path — that's just not where FastAPI puts it by default.)
 
 For local development without PostgreSQL, remove/rename `.env` (or `unset DATABASE_URL` if it's exported in your shell) and the app falls back to `sqlite:///./uk_housing.db`. PostgreSQL is the supported deployment database:
 
