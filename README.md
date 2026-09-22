@@ -21,7 +21,6 @@ Open `http://127.0.0.1:8000/ui/` for the web UI. Interactive API docs are availa
 - `http://127.0.0.1:8000/docs` — Swagger UI (interactive, "Try it out" buttons)
 - `http://127.0.0.1:8000/redoc` — ReDoc (read-only, cleaner reference view)
 
-
 ![Swagger UI at /docs](docs/screenshots/swagger-docs.webp)
 
 ![ReDoc at /redoc](docs/screenshots/redoc.webp)
